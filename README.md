@@ -25,3 +25,4 @@ Copyright (c) 2018, Molecular Software Sciences Institute (MolSSI)
  
 Project based on the 
 [Computational Chemistry Python Cookiecutter](https://github.com/choderalab/cookiecutter-python-comp-chem)
+
