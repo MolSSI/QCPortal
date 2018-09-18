@@ -7,4 +7,4 @@ try:
     from ... import interface as portal
 except ImportError:
     # QCPortal based import
-    from ... import qcportal as portal
+    import qcportal as portal
