@@ -12,6 +12,9 @@ matrix:
     - os: osx
       language: generic
       env: PYTHON_VER=3.6
+    - os: osx
+      language: generic
+      env: PYTHON_VER=3.7
 
     - os: linux
       python: 3.5
@@ -19,6 +22,10 @@ matrix:
     - os: linux
       python: 3.6
       env: PYTHON_VER=3.6
+    - os: linux
+      python: 3.7
+      env: PYTHON_VER=3.7
+
 
 before_install:
     # Additional info about the build
@@ -52,3 +59,199 @@ notifications:
 
 after_success:
   - codecov
+
+
+##### BREAK LINE
+
+# After changing this file, check it on:
+#   http://lint.travis-ci.org/
+
+
+#services:
+#  - mongodb
+#
+#addons:
+#  apt:
+#    sources:
+#    - mongodb-3.0-precise
+#    packages:
+#    - mongodb-org-server
+#
+#
+#matrix:
+#  include:
+#    - os: linux
+#      python: 3.5
+#      env:
+#        - PYTHON_VER=3.5
+#        - ENVIRON=DASK
+#
+#    - os: linux
+#      python: 3.6
+#      env:
+#        - PYTHON_VER=3.6
+#        - ENVIRON=DASK
+#
+#    - os: linux
+#      python: 3.6
+#      env:
+#        - PYTHON_VER=3.6
+#        - ENVIRON=FIREWORKS
+#
+#    - os: linux
+#      python: 3.6
+#      env:
+#        - PYTHON_VER=3.7
+#        - ENVIRON=FIREWORKS
+#
+#    - os: linux
+#      python: 3.6
+#      env:
+#        - PYTHON_VER=3.6
+#        - ENVIRON=OPENFF
+
+#   allow_failures:
+#     - os: linux
+#       python: 3.6
+#       env:
+#         - PYTHON_VER=3.6
+#         - ENVIRON=OPENFF
+
+
+#before_install:
+#  # Additional info about the build
+#  - uname -a
+#  - free -m
+#  - df -h
+#  - ulimit -a
+#
+#  # Setup python environment
+#  - source devtools/travis-ci/before_install.sh
+#  - python -V
+#
+#install:
+#    # Create test environment for package
+#  - |
+#    if [ $ENVIRON == "DASK" ]; then
+#      conda env create -n test python=$PYTHON_VER -f devtools/conda-envs/dask.yaml
+#    elif [ $ENVIRON == "FIREWORKS" ]; then
+#      conda env create -n test python=$PYTHON_VER -f devtools/conda-envs/fireworks.yaml
+#    elif [ $ENVIRON == "OPENFF" ]; then
+#      conda env create -n test python=$PYTHON_VER -f devtools/conda-envs/openff.yaml
+#    else
+#      echo "ERROR: No match for ENVIRON ($ENVIRON)."
+#      exit 1
+#    fi
+#  - source activate test
+#
+#    # Build and install package
+#  - python setup.py develop --no-deps
+#
+#before_script:
+#  - sleep 5
+#  - python -V
+#  - mongod --version
+#  - conda list
+#
+#script:
+#  - py.test -v --runslow --cov=qcfractal qcfractal/
+#  - py.test -v --runexamples examples/
+#
+#
+#after_success:
+#  - codecov
+
+#
+#  - mongodb
+#
+#addons:
+#  apt:
+#    sources:
+#    - mongodb-3.0-precise
+#    packages:
+#    - mongodb-org-server
+#
+#
+#matrix:
+#  include:
+#    - os: linux
+#      python: 3.5
+#      env:
+#        - PYTHON_VER=3.5
+#        - ENVIRON=DASK
+#
+#    - os: linux
+#      python: 3.6
+#      env:
+#        - PYTHON_VER=3.6
+#        - ENVIRON=DASK
+#
+#    - os: linux
+#      python: 3.6
+#      env:
+#        - PYTHON_VER=3.6
+#        - ENVIRON=FIREWORKS
+#
+#    - os: linux
+#      python: 3.6
+#      env:
+#        - PYTHON_VER=3.7
+#        - ENVIRON=FIREWORKS
+#
+#    - os: linux
+#      python: 3.6
+#      env:
+#        - PYTHON_VER=3.6
+#        - ENVIRON=OPENFF
+#
+##   allow_failures:
+##     - os: linux
+##       python: 3.6
+##       env:
+##         - PYTHON_VER=3.6
+##         - ENVIRON=OPENFF
+#
+#
+#before_install:
+#  # Additional info about the build
+#  - uname -a
+#  - free -m
+#  - df -h
+#  - ulimit -a
+#
+#  # Setup python environment
+#  - source devtools/travis-ci/before_install.sh
+#  - python -V
+#
+#install:
+#    # Create test environment for package
+#  - |
+#    if [ $ENVIRON == "DASK" ]; then
+#      conda env create -n test python=$PYTHON_VER -f devtools/conda-envs/dask.yaml
+#    elif [ $ENVIRON == "FIREWORKS" ]; then
+#      conda env create -n test python=$PYTHON_VER -f devtools/conda-envs/fireworks.yaml
+#    elif [ $ENVIRON == "OPENFF" ]; then
+#      conda env create -n test python=$PYTHON_VER -f devtools/conda-envs/openff.yaml
+#    else
+#      echo "ERROR: No match for ENVIRON ($ENVIRON)."
+#      exit 1
+#    fi
+#  - source activate test
+#
+#    # Build and install package
+#  - python setup.py develop --no-deps
+#
+#before_script:
+#  - sleep 5
+#  - python -V
+#  - mongod --version
+#  - conda list
+#
+#script:
+#  - py.test -v --runslow --cov=qcfractal qcfractal/
+#  - py.test -v --runexamples examples/
+#
+#
+#after_success:
+#  - codecov
+#
