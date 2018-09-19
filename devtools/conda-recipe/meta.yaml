@@ -15,6 +15,12 @@ requirements:
 
   run:
     - python
+    - numpy
+    - pandas
+    - pytest
+    - jsonschema
+    - requests
+    - pyyaml
 
 test:
   requires:
@@ -23,5 +29,5 @@ test:
     - qcportal
 
 about:
-  home: add_url_here
+  home: https://github.com/molssi/qcportal/
   license: BSD-3-Clause License
