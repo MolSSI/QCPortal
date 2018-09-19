@@ -1,7 +1,7 @@
 # How to contribute
 
 We welcome contributions from external contributors, and this document
-describes how to merge code changes into this qcportal. 
+describes how to merge code changes into QCPortal. 
 
 ## Getting Started
 
@@ -13,6 +13,9 @@ describes how to merge code changes into this qcportal.
 
 ## Making Changes
 
+* Unique to QCPortal: This repository is partially maintained by an automated pipeline
+  where the `qcportal` directory is maintained through the [QCFractal](github.com/MolSSI/QCFRactal)
+  repository. Main code changes should be made there.
 * Add some really awesome code to your local fork.  It's usually a [good
   idea](http://blog.jasonmeridth.com/posts/do-not-issue-pull-requests-from-your-master-branch/)
   to make changes on a
