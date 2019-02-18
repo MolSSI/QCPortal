@@ -24,11 +24,6 @@ matrix:
       - ENVIRON=BASE
 
     - env:
-      - NAME="Adapters 3.6"
-      - PYTHON_VER=3.6
-      - ENVIRON=ADAPTERS
-
-    - env:
       - NAME="OpenFF 3.6"
       - PYTHON_VER=3.6
       - ENVIRON=OPENFF
@@ -57,9 +52,7 @@ install:
     # Create test environment for package
   - echo $ENVIRON
   - |
-    if [ $ENVIRON == "ADAPTERS" ]; then
-      python devtools/scripts/conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/adapters.yaml
-    elif [ $ENVIRON == "OPENFF" ]; then
+    if [ $ENVIRON == "OPENFF" ]; then
       python devtools/scripts/conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/openff.yaml
     elif [ $ENVIRON == "DEV_HEAD" ]; then
       python devtools/scripts/conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/dev_head.yaml
