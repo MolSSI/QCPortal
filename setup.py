@@ -22,10 +22,8 @@ setup(
     install_requires=[
         'numpy>=1.7',
         'pandas',
-        'pytest',
-        'jsonschema',
         'requests',
-        'pyyaml',
+        'pydantic>=0.19',
     ],
 
     tests_require=[

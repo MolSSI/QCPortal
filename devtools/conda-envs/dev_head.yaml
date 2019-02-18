@@ -1,0 +1,24 @@
+name: qcportal
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - pandas
+  - requests
+  - pydantic
+
+# Test depends
+  - pytest
+  - pytest-cov
+  - codecov
+
+# Environment specific includes
+  - rdkit
+
+# Pip includes
+  - pip:
+    - git+git://github.com/MolSSI/QCElemental#egg=qcelemental
+    - git+git://github.com/leeping/geomeTRIC#egg=geometric
+    - git+git://github.com/lpwgroup/torsiondrive.git#egg=torsiondrive

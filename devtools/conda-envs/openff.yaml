@@ -1,0 +1,25 @@
+name: qcportal
+channels:
+  - defaults
+  - psi4
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - pandas
+  - requests
+  - pydantic
+
+# Test depends
+  - pytest
+  - pytest-cov
+  - codecov
+
+# Environment specific includes
+  - psi4
+  - rdkit
+  - geometric>=0.9.3
+  - torsiondrive
+
+# QCArchive includes
+  - qcelemental>=0.2.5
