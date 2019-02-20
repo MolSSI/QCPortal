@@ -1,63 +1,58 @@
-language: python
+# After changing this file, check it on:
+#   http://lint.travis-ci.org/
+
 
 # Run jobs on container-based infrastructure, can be overridden per job
-dist: trusty
+sudo: false
+dist: xenial
+
+# Environment base builds
+language: generic
+os: linux
 
 matrix:
   include:
-    # Extra includes for OSX since python language is not available by default on OSX
-    - os: osx
-      language: generic
-      env: PYTHON_VER=3.5
-    - os: osx
-      language: generic
-      env: PYTHON_VER=3.6
-    - os: osx
-      language: generic
-      env: PYTHON_VER=3.7
 
-    - os: linux
-      python: 3.5
-      env: PYTHON_VER=3.5
-    - os: linux
-      python: 3.6
-      env: PYTHON_VER=3.6
-    - os: linux
-      python: 3.7
-      env: PYTHON_VER=3.7
-  allow_failures:
-    - env: PYTHON_VER=3.7
+    - env:
+      - NAME="BASE 3.6"
+      - PYTHON_VER=3.6
+      - ENVIRON=BASE
 
+    - env:
+      - NAME="BASE 3.7"
+      - PYTHON_VER=3.7
+      - ENVIRON=BASE
 
 before_install:
-    # Additional info about the build
+  # Additional info about the build
   - uname -a
+  - free -m
   - df -h
   - ulimit -a
 
-    # Install the Python environment
+  # Setup python environment
   - source devtools/travis-ci/before_install.sh
   - python -V
 
 install:
-
     # Create test environment for package
-  - conda create -n test python=$PYTHON_VER pip pytest pytest-cov
-  - conda activate test
-
-    # Install pip only modules
-  - pip install codecov
+  - echo $ENVIRON
+  - python devtools/scripts/conda_env.py -n=test -p=$PYTHON_VER devtools/conda-envs/base.yaml
+  - source activate test
 
     # Build and install package
-  - conda build --python=$PYTHON_VER devtools/conda-recipe
-  - conda install --use-local qcportal
+  - python setup.py develop --no-deps
 
+before_script:
+  - python -V
+  - conda list
 
 script:
   - pytest -v --cov=qcportal qcportal/tests/
 
 notifications:
-    email: false
+  email: false
 
 after_success:
   - codecov
+

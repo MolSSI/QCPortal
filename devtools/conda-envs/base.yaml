@@ -1,0 +1,18 @@
+name: qcportal
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python
+  - numpy
+  - pandas
+  - requests
+  - pydantic
+
+# Test depends
+  - pytest
+  - pytest-cov
+  - codecov
+
+# QCArchive includes
+  - qcelemental>=0.2.6
