@@ -33,21 +33,3 @@ To access the new environment:
 ```bash
 conda activate {name}
 ```
-
-## Manifest and file differences
-
-* `openff.yaml`: [Open Force Field Initiative](http://openforcefield.org/) workflow integrated environment
-    * [Fireworks-based](https://materialsproject.github.io/fireworks) Workflows
-    * [MongoDB](https://www.mongodb.com/) management
-    * [Dask](http://dask.pydata.org/en/latest/) distribution engine
-    * **Recomended**
-* `fireworks.yaml`: Fireworks based workflow for QCFractal
-    * Same as `openff.yaml` without additional workflow components
-    * Minimal recommendation to run examples
-* `dask.yaml`: Minimal structure using Dask and Mongodb
-    * Minimal
-    * Does NOT include fireworks
-* `parsl.yaml`: Minimal structure using Parsl and Mongodb
-    * Minimal
-    * Does NOT include fireworks
-

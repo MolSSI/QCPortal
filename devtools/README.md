@@ -13,8 +13,6 @@ Windows testing if you only plan to deploy on specific platforms. These are just
 
 * `travis-ci`: Linux and OSX based testing through [Travis-CI](https://about.travis-ci.com/) 
   * `install.sh`: Pip/Miniconda installation script for Travis
-* `appveyor`: Windows based testing through [AppVeyor](https://www.appveyor.com/)
-  * `install_conda.ps1` Powershell installation script of Conda components
 
 ### Conda Recipe:
 

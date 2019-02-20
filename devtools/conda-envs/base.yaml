@@ -15,4 +15,4 @@ dependencies:
   - codecov
 
 # QCArchive includes
-  - qcelemental>=0.2.5
+  - qcelemental>=0.2.6

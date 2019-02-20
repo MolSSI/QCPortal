@@ -24,6 +24,7 @@ setup(
         'pandas',
         'requests',
         'pydantic>=0.19',
+        'qcelemental>=0.2.6'
     ],
 
     tests_require=[
