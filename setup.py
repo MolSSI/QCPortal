@@ -5,19 +5,27 @@ A client interface to the QC Archive Project
 from setuptools import setup, find_packages
 import versioneer
 
-DOCLINES = __doc__.split("\n")
+short_description = "A client interface to the QC Archive Project."
+
+try:
+    with open("README.md", "r") as handle:
+        long_description = handle.read()
+except FileNotFoundError:
+    long_description = short_description
 
 setup(
     # Self-descriptive entries which should always be present
     name='qcportal',
     author='MolSSI',
-    description=DOCLINES[0],
-    long_description="\n".join(DOCLINES[2:]),
+    description=short_description,
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     license='BSD-3-Clause',
     # Which Python importable modules should be included when your package is installed
     packages=find_packages(),
+    include_package_data=True,
 
     install_requires=[
         'numpy>=1.7',
