@@ -1,5 +1,5 @@
 recursive-include qcportal *.py
-recursive-include qportal/data *.npy
+recursive-include qcportal/data *.npy
 recursive-include qcportal/data *.psimol
 recursive-include qcportal/data *.json
 

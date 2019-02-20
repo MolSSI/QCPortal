@@ -1,8 +1,8 @@
 QCPortal
 ==============================
 [//]: # (Badges)
-[![Travis Build Status](https://travis-ci.org/molssi/QCPortal.png)](https://travis-ci.org/REPLACE_WITH_OWNER_ACCOUNT/QCPortal)
-[![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/QCPortal/branch/master/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/QCPortal/branch/master)
+[![Travis Build Status](https://travis-ci.org/molssi/QCPortal.png)](https://travis-ci.org/MolSSI/QCPortal)
+[![codecov](https://codecov.io/gh/MolSSI/QCPortal/branch/master/graph/badge.svg)](https://codecov.io/gh/MolSSI/QCPortal/branch/master)
 
 A client interface to the QC Archive Project.
 
@@ -15,6 +15,18 @@ the source code itself (anything in the `qcfractal` directory) should raise an i
 on the [QCFractal issue tracker](https://github.com/MolSSI/QCFractal/issues/new/choose) 
 for the `interface`. Issues about the documentation, repository structure, or deployment 
 of the standalone QCPortal can be raised on this repository. 
+
+### QCPortal Version descriptions with QCFractal
+
+QCPortal's release versions mostly match QCFractal's releases with the following standard form
+
+```X.Y.Z```
+
+for Major (X), Minor(Y), and Patch(Z) version respectively. However, because Portal is intrinsicly linked to
+Fractal, the following rules must be adhered to:
+1. Major release version **must** be the same as Fractal
+2. Minor release version **must** be the same as Fractal
+3. Patch version is unrestricted and can differ from Fractal
 
 ### Copyright
 

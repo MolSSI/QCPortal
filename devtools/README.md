@@ -38,7 +38,7 @@ This directory contains the files to build and deploy on [Conda](https://conda.i
 - [ ] Make sure there is an/are issue(s) opened for your specific update
 - [ ] Create the PR, referencing the issue
 - [ ] Debug the PR as needed until tests pass
-- [ ] Tag the final, debugged version 
+- [ ] Tag the final, debugged version, matching the QCFractal version for Major and Minor version
    *  `git tag -a X.Y.Z [latest pushed commit] && git push --follow-tags`
 - [ ] Get the PR merged in
 
