@@ -1,13 +1,13 @@
 """
 Models for the REST interface
 """
-from enum import Enum
 from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import BaseConfig, BaseModel, validator
 
-from .common_models import KeywordSet, Molecule, json_encoders
+from .common_models import KeywordSet, Molecule
 from .gridoptimization import GridOptimizationInput
+from .model_utils import json_encoders
 from .torsiondrive import TorsionDriveInput
 
 __all__ = [
@@ -51,18 +51,10 @@ class ResponsePOSTMeta(ResponseMeta):
 ### Molecule response
 
 
-class MoleculeIndices(Enum):
-    id = "id"
-    molecule_hash = "molecule_hash"
-    molecular_formula = "molecular_formula"
-
-
 class MoleculeGETBody(BaseModel):
-    class Meta(BaseModel):
-        index: MoleculeIndices
 
-    data: List[str]
-    meta: Meta
+    data: Dict[str, Any]
+    meta: Dict[str, Any]
 
 
 class MoleculeGETResponse(BaseModel):
@@ -185,7 +177,7 @@ class ResultGETBody(BaseModel):
         data = {key: v[key] for key in (v.keys() & valid_keys)}
         if "keywords" in data and data["keywords"] is None:
             data["keywords"] = 'null'
-        if "basis" in data and data["basis"] is None:
+        if "basis" in data and ((data["basis"] is None) or (data["basis"] == "")):
             data["basis"] = 'null'
         return data
 
@@ -345,6 +337,9 @@ class QueueManagerGETResponse(BaseModel):
 class QueueManagerPOSTBody(BaseModel):
     meta: QueueManagerMeta
     data: Dict[str, Any]
+
+    class Config:
+        json_encoders = json_encoders
 
 
 class QueueManagerPOSTResponse(BaseModel):

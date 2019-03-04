@@ -1,13 +1,13 @@
 """
 QCPortal Database ODM
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from pydantic import BaseModel
+from qcelemental import constants
 
-from ..constants import get_scale
 from ..statistics import wrap_statistics
 from .collection import Collection
 from .collection_utils import register_collection
@@ -18,6 +18,16 @@ class MoleculeRecord(BaseModel):
     molecule_id: str
     comment: Optional[str] = None
     local_results: Dict[str, Any] = {}
+
+
+class ContributedValues(BaseModel):
+    name: str
+    doi: Optional[str] = None
+    theory_level: Union[str, Dict[str, str]]
+    theory_level_details: Union[str, Dict[str, str]] = None
+    comments: Optional[str] = None
+    values: Dict[str, Any]
+    units: str
 
 
 class Dataset(Collection):
@@ -56,6 +66,7 @@ class Dataset(Collection):
         self._new_molecules = {}
         self._new_keywords = {}
         self._new_records = []
+        self._updated_state = False
 
     class DataModel(Collection.DataModel):
 
@@ -65,10 +76,16 @@ class Dataset(Collection):
         default_driver: str = "energy"
         alias_keywords: Dict[str, Dict[str, str]] = {}
 
+        # Data
         records: List[MoleculeRecord] = []
+        contributed_values: Dict[str, ContributedValues] = {}
+
+        # History, driver, program, method (basis, options)
+        history: Set[Tuple[str, str, str, Optional[str], Optional[str]]] = set()
+        history_keys: Tuple[str, str, str, str, str] = ("driver", "program", "method", "basis", "keywords")
 
     def _check_state(self):
-        if self._new_molecules or self._new_keywords or self._new_records:
+        if self._new_molecules or self._new_keywords or self._new_records or self._updated_state:
             raise ValueError("New molecules, keywords, or records detected, run save before submitting new tasks.")
 
     def _canonical_pre_save(self, client):
@@ -78,6 +95,7 @@ class Dataset(Collection):
             assert len(ret) == 1, "KeywordSet added incorrectly"
             self.data.alias_keywords[k[0]][k[1]] = ret[0]
             del self._new_keywords[k]
+        self._updated_state = False
 
     def _add_molecules_by_dict(self, client, molecules):
 
@@ -105,6 +123,54 @@ class Dataset(Collection):
         self._new_records = []
         self._new_molecules = {}
 
+    def _add_history(self, **history: Dict[str, Optional[str]]) -> None:
+        """
+        Adds compute history to the dataset
+        """
+        if history.keys() != set(self.data.history_keys):
+            raise KeyError("Internal error: Incorrect history keys passed in.")
+
+        new_history = []
+        for key in self.data.history_keys:
+            value = history[key]
+            if value is not None:
+                value = value.lower()
+            new_history.append(value)
+
+        self.data.history.add(tuple(new_history))
+
+    def list_history(self, **search: Dict[str, Optional[str]]) -> 'DataFrame':
+        """
+        Lists the history of computations completed.
+
+        Parameters
+        ----------
+        **search : Dict[str, Optional[str]]
+            Allows searching to narrow down return.
+
+        Returns
+        -------
+        DataFrame
+            The computed keys.
+
+        """
+
+        if not (search.keys() <= set(self.data.history_keys)):
+            raise KeyError("Not all query keys were understood.")
+
+        df = pd.DataFrame(list(self.data.history), columns=self.data.history_keys)
+
+        for key, value in search.items():
+            if value is not None:
+                value = value.lower()
+                df = df[df[key] == value]
+            else:
+                df = df[df[key].isnull()]
+
+        df.set_index(list(self.data.history_keys[:-1]), inplace=True)
+        df.sort_index(inplace=True)
+        return df
+
     def _default_parameters(self, driver, keywords, program):
 
         if program is None:
@@ -117,16 +183,19 @@ class Dataset(Collection):
         if driver is None:
             driver = self.data.default_driver
 
+        keywords_alias = keywords
         if keywords is None:
             if program in self.data.default_keywords:
-                keywords = self.data.alias_keywords[program][self.data.default_keywords[program]]
+                keywords_alias = self.data.default_keywords[program]
+                keywords = self.data.alias_keywords[program][keywords_alias]
         else:
             if (program not in self.data.alias_keywords) or (keywords not in self.data.alias_keywords[program]):
                 raise KeyError("KeywordSet alias '{}' not found for program '{}'.".format(keywords, program))
 
+            keywords_alias = keywords
             keywords = self.data.alias_keywords[program][keywords]
 
-        return driver, keywords, program
+        return driver, keywords, keywords_alias, program
 
     def _query(self, indexer, query, field="return_result", scale=None):
         """
@@ -149,7 +218,7 @@ class Dataset(Collection):
         ret.drop("molecule", axis=1, inplace=True)
 
         if scale:
-            ret[ret.select_dtypes(include=['number']).columns] *= get_scale(scale)
+            ret[ret.select_dtypes(include=['number']).columns] *= constants.conversion_factor('hartree', scale)
 
         return ret
 
@@ -160,7 +229,7 @@ class Dataset(Collection):
 
         self.data.default_program = program.lower()
 
-    def add_keywords(self, alias: str, keyword: 'KeywordSet', default: bool=False) -> bool:
+    def add_keywords(self, alias: str, program: str, keyword: 'KeywordSet', default: bool = False) -> bool:
         """
         Adds an option alias to the dataset. Not that keywords are not present
         until a save call has been completed.
@@ -176,17 +245,96 @@ class Dataset(Collection):
         """
 
         alias = alias.lower()
-        if keyword.program not in self.data.alias_keywords:
-            self.data.alias_keywords[keyword.program] = {}
+        if program not in self.data.alias_keywords:
+            self.data.alias_keywords[program] = {}
 
-        if alias in self.data.alias_keywords[keyword.program]:
+        if alias in self.data.alias_keywords[program]:
             raise KeyError("Alias '{}' already set for program {}.".format(alias, keyword.program))
 
-        self._new_keywords[(keyword.program, alias)] = keyword
+        self._new_keywords[(program, alias)] = keyword
 
         if default:
-            self.data.default_keywords[keyword.program] = alias
+            self.data.default_keywords[program] = alias
         return True
+
+    def add_contributed_values(self, contrib: ContributedValues, overwrite=False) -> None:
+        """Adds a ContributedValues to the database.
+
+        Parameters
+        ----------
+        contrib : ContributedValues
+            The ContributedValues to add.
+        overwrite : bool, optional
+            Forces
+
+        """
+
+        # Convert and validate
+        if isinstance(contrib, ContributedValues):
+            contrib = contrib.copy()
+        else:
+            contrib = ContributedValues(**contrib)
+
+        # Check the key
+        key = contrib.name.lower()
+        if (key in self.data.contributed_values) and (overwrite is False):
+            raise KeyError(
+                "Key '{}' already found in contributed values. Use `overwrite=True` to force an update.".format(key))
+
+        self.data.contributed_values[key] = contrib
+        self._updated_state = True
+
+    def list_contributed_values(self) -> List[str]:
+        """
+        Lists the known keys for all contributed values.
+        """
+
+        return list(self.data.contributed_values)
+
+    def get_contributed_values(self, key: str) -> ContributedValues:
+        """Returns a copy of the requested ContributedValues object.
+
+        Parameters
+        ----------
+        key : str
+            The ContributedValues object key.
+
+        Returns
+        -------
+        ContributedValues
+            The requested ContributedValues object.
+        """
+        return self.data.contributed_values[key.lower()].copy()
+
+    def get_contributed_values_column(self, key: str, scale='hartree') -> 'Series':
+        """Returns a Pandas column with the requested contributed values
+
+        Parameters
+        ----------
+        key : str
+            The ContributedValues object key.
+        scale : None, optional
+            All units are based in Hartree, the default scaling is to kcal/mol.
+
+        Returns
+        -------
+        Series
+            A pandas Series containing the request values.
+        """
+        data = self.get_contributed_values(key)
+
+        # Annoying work around to prevent some pands magic
+        if isinstance(next(iter(data.values.values())), (int, float)):
+            values = data.values
+        else:
+            values = {k: [v] for k, v in data.values.items()}
+
+        tmp_idx = pd.DataFrame.from_dict(values, orient="index", columns=[key])
+
+        # Convert to numeric
+        tmp_idx[tmp_idx.select_dtypes(include=['number']).columns] *= constants.conversion_factor(data.units, scale)
+
+        return tmp_idx
 
     def add_entry(self, name, molecule, **kwargs):
 
@@ -196,12 +344,13 @@ class Dataset(Collection):
 
     def query(self,
               method,
-              basis,
+              basis=None,
+              *,
               driver=None,
               keywords=None,
               program=None,
-              local_results=False,
-              scale="kcal",
+              contrib=False,
+              scale="kcal / mol",
               field="return_result",
               as_array=False):
         """
@@ -219,8 +368,8 @@ class Dataset(Collection):
             The option token desired
         program : str, optional
             The program to query on
-        local_results : bool
-            Toggles a search between the Mongo Pages and the Databases's reaction_results field.
+        contrib : bool
+            Toggles a search between the Mongo Pages and the Databases's ContributedValues field.
         scale : str, double
             All units are based in Hartree, the default scaling is to kcal/mol.
         field : str, optional
@@ -243,9 +392,9 @@ class Dataset(Collection):
 
         """
 
-        driver, keywords, program = self._default_parameters(driver, keywords, program)
+        driver, keywords, keywords_alias, program = self._default_parameters(driver, keywords, program)
 
-        if not local_results and (self.client is None):
+        if not contrib and (self.client is None):
             raise AttributeError("DataBase: FractalClient was not set.")
 
         query_keys = {
@@ -256,21 +405,8 @@ class Dataset(Collection):
             "program": program,
         }
         # # If reaction results
-        if local_results:
-
-            data = []
-            for record in self.data.records:
-                try:
-                    data.append([record.name, record.local_results[method]])
-                except KeyError:
-                    pass
-
-            tmp_idx = pd.DataFrame(data, columns=["index", method])
-            tmp_idx.set_index("index", inplace=True)
-
-            # Convert to numeric
-            if scale:
-                tmp_idx[tmp_idx.select_dtypes(include=['number']).columns] *= get_scale(scale)
+        if contrib:
+            tmp_idx = self.get_contributed_values_column(method, scale=scale)
 
         else:
             indexer = {e.name: e.molecule_id for e in self.data.records}
@@ -317,12 +453,16 @@ class Dataset(Collection):
         if self.client is None:
             raise AttributeError("DataBase: Compute: Client was not set.")
 
-        driver, keywords, program = self._default_parameters(driver, keywords, program)
+        driver, keywords, keywords_alias, program = self._default_parameters(driver, keywords, program)
 
         molecule_idx = [e.molecule_id for e in self.data.records]
         umols, uidx = np.unique(molecule_idx, return_index=True)
 
         ret = self.client.add_compute(program, method, basis, driver, keywords, list(umols))
+
+        # Update the record that this was computed
+        self._add_history(driver=driver, program=program, method=method, basis=basis, keywords=keywords_alias)
+        self.save()
 
         return ret
 
