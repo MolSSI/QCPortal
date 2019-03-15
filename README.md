@@ -2,7 +2,6 @@ QCPortal
 ==============================
 [//]: # (Badges)
 [![Travis Build Status](https://travis-ci.org/molssi/QCPortal.png)](https://travis-ci.org/MolSSI/QCPortal)
-[![codecov](https://codecov.io/gh/MolSSI/QCPortal/branch/master/graph/badge.svg)](https://codecov.io/gh/MolSSI/QCPortal/branch/master)
 
 A client interface to the QC Archive Project.
 
