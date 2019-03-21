@@ -31,8 +31,9 @@ setup(
         'numpy>=1.7',
         'pandas',
         'requests',
-        'pydantic>=0.19',
-        'qcelemental>=0.2.6'
+        'pyyaml',
+        'pydantic>=0.20',
+        'qcelemental>=0.3.3'
     ],
 
     tests_require=[
