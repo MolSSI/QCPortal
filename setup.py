@@ -33,7 +33,9 @@ setup(
         'requests',
         'pyyaml',
         'pydantic>=0.20',
-        'qcelemental>=0.3.3'
+        'qcelemental>=0.4.0',
+        'plotly',
+        'py3dmol'
     ],
 
     tests_require=[
