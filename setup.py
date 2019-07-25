@@ -31,9 +31,9 @@ setup(
         'numpy>=1.7',
         'pandas',
         'requests',
-        'pyyaml',
-        'pydantic>=0.20',
-        'qcelemental>=0.4.0',
+        'pyyaml>=5.1',
+        'pydantic>=0.30.1',
+        'qcelemental>=0.5.0',
         'plotly',
         'py3dmol'
     ],
