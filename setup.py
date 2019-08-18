@@ -28,12 +28,13 @@ setup(
     include_package_data=True,
 
     install_requires=[
+        'msgpack>=0.6.1',
         'numpy>=1.7',
         'pandas',
         'requests',
         'pyyaml>=5.1',
-        'pydantic>=0.30.1',
-        'qcelemental>=0.5.0',
+        'pydantic>=0.32.0',
+        'qcelemental>=0.6.0',
         'plotly',
         'py3dmol'
     ],
