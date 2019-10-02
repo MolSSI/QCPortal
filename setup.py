@@ -34,7 +34,7 @@ setup(
         'requests',
         'pyyaml>=5.1',
         'pydantic>=0.32.0',
-        'qcelemental>=0.6.0',
+        'qcelemental>=0.9.0',
         'plotly',
         'py3dmol'
     ],
