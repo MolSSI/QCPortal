@@ -29,7 +29,7 @@ Fractal, the following rules must be adhered to:
 
 ### Copyright
 
-Copyright (c) 2018, Molecular Software Sciences Institute (MolSSI)  
+Copyright (c) 2018-2019, Molecular Software Sciences Institute (MolSSI)  
 
 
 #### Acknowledgements
