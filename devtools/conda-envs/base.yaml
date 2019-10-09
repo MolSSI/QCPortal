@@ -12,6 +12,7 @@ dependencies:
   - pyyaml >=5.1
   - plotly
   - py3dmol
+  - h5py
 
 # Test depends
   - pytest
