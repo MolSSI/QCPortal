@@ -8,12 +8,10 @@ A client interface to the QC Archive Project.
 This standalone client serves to hook into QCFractal instances from remote or local 
 locations and is designed for end-users who which to access the QCFractal stores.
 
-The main source code for this project is automatically ported over from the 
-[QCFractal](https://github.com/molssi/qcfractal) automatically. Issues involving 
-the source code itself (anything in the `qcfractal` directory) should raise an issue 
-on the [QCFractal issue tracker](https://github.com/MolSSI/QCFractal/issues/new/choose) 
-for the `interface`. Issues about the documentation, repository structure, or deployment 
-of the standalone QCPortal can be raised on this repository. 
+### Issues
+
+All issues should be reported to the [QCFractal issue tracker](https://github.com/MolSSI/QCFractal/issues/new/choose).
+This repository is automatically updated from the main QCFractal source code and is only used for deployment of the QCPortal package.
 
 ### QCPortal Version descriptions with QCFractal
 
