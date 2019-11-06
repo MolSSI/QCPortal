@@ -33,10 +33,13 @@ setup(
         'pandas',
         'requests',
         'pyyaml>=5.1',
-        'pydantic>=0.32.0',
-        'qcelemental>=0.9.0',
+        'pydantic>=1.0.0',
+        'qcelemental>=0.11.0',
+        'tqdm',
+        'h5py',
+        'pyarrow>=0.13.0',
         'plotly',
-        'py3dmol'
+        'nglview'
     ],
 
     tests_require=[
