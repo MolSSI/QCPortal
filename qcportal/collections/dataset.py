@@ -1278,6 +1278,17 @@ class Dataset(Collection):
 
         self.data.__dict__["default_benchmark"] = benchmark
         return True
+    def set_default_driver(self,driver: str) -> bool:
+        """
+        Sets the default driver value.
+
+        Parameters
+        ----------
+        driver: str
+            The driver for the collection computation.
+        """
+        self.data__dict__["default_driver"] = driver
+        return True
 
     def add_keywords(self, alias: str, program: str, keyword: "KeywordSet", default: bool = False) -> bool:
         """
