@@ -1245,8 +1245,10 @@ class Dataset(Collection):
                         f"This has been corrected."
                     )
                 self._column_metadata[column]["units"] = value
-            except ValueError as e:
-                # This is meant to catch pint.errors.DimensionalityError without importing pint, which is too slow
+            except (ValueError, TypeError) as e:
+                # This is meant to catch pint.errors.DimensionalityError without importing pint, which is too slow.
+                # In pint <=0.9, DimensionalityError is a ValueError.
+                # In pint >=0.10, DimensionalityError is TypeError.
                 if e.__class__.__name__ == "DimensionalityError":
                     pass
                 else:
@@ -1492,8 +1494,10 @@ class Dataset(Collection):
             try:
                 new_data[column_name] *= constants.conversion_factor(units[column_name], self.units)
                 metadata["units"] = self.units
-            except ValueError as e:
-                # This is meant to catch pint.errors.DimensionalityError without importing pint, which is too slow
+            except (ValueError, TypeError) as e:
+                # This is meant to catch pint.errors.DimensionalityError without importing pint, which is too slow.
+                # In pint <=0.9, DimensionalityError is a ValueError.
+                # In pint >=0.10, DimensionalityError is TypeError.
                 if e.__class__.__name__ == "DimensionalityError":
                     metadata["units"] = units[column_name]
                 else:
@@ -1566,7 +1570,7 @@ class Dataset(Collection):
             Either a DataFrame of indexed ResultRecords or a single ResultRecord if a single subset string was provided.
         """
         name, _, history = self._default_parameters(program, method, basis, keywords)
-        if name not in set(self.list_records().reset_index()["name"].unique()):
+        if len(self.list_records(**history)) == 0:
             raise KeyError(f"Requested query ({name}) did not match a known record.")
 
         indexer = self._molecule_indexer(subset=subset, force=True)
