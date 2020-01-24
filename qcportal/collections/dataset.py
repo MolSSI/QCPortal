@@ -1289,7 +1289,7 @@ class Dataset(Collection):
         driver: str
             The driver for the collection computation.
         """
-        self.data__dict__["default_driver"] = driver
+        self.data.__dict__["default_driver"] = driver
         return True
 
     def add_keywords(self, alias: str, program: str, keyword: "KeywordSet", default: bool = False) -> bool:
