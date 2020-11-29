@@ -1,0 +1,31 @@
+name: CI workflow for GHA
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-16.04 # Xenial Xerus
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Additional info about the build
+        run: |
+          uname -a
+          free -m
+          df -h
+          ulimit -a
+      - name: Create environment BASE ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Setup test environment
+        shell: bash
+        run: |
+          echo BASE ${{ matrix.python-version }}
+          $CONDA/bin/python devtools/scripts/conda_env.py -n=test -p=${{ matrix.python-version }} devtools/conda-envs/base.yaml
+      - name: Build, install and test of the package
+        run: |
+          source $CONDA/bin/activate 
+          conda activate test
+          python setup.py develop --no-deps
+          pytest -v --cov=qcportal qcportal/tests/
