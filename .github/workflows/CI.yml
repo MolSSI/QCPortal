@@ -13,11 +13,14 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7]
+        python-version: [3.6, 3.7, 3.8, 3.9]
         environ: [base]
 
     steps:
       - uses: actions/checkout@v2
+        with:
+            # We need the full depth for versions to work
+            fetch-depth: 0
       - name: Additional info about the build
         run: |
           uname -a
