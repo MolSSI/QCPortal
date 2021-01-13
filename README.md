@@ -1,7 +1,7 @@
 QCPortal
 ==============================
 [//]: # (Badges)
-[![Travis Build Status](https://api.travis-ci.org/MolSSI/QCPortal.png)](https://travis-ci.org/MolSSI/QCPortal)
+[![Continuous Integration](https://github.com/MolSSI/QCPortal/workflows/CI%20workflow%20for%20GHA/badge.svg)](https://github.com/MolSSI/QCPortal/actions?query=workflow%3A%22CI+workflow+for+GHA%22)
 
 A client interface to the QC Archive Project.
 
