@@ -50,7 +50,7 @@ jobs:
       - name: Test the package
         shell: bash -l {0}
         run: |
-          pytest -v --cov=qcportal qcportal/tests/
+          pytest -v --cov=qcportal --cov-report=xml qcportal/tests/
 
       - name: Code coverage report
         uses: codecov/codecov-action@v1
