@@ -1,10 +1,16 @@
 name: CI workflow for GHA
 
-on: push
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
-    runs-on: ubuntu-16.04 # Xenial Xerus
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [3.6, 3.7]
@@ -19,7 +25,7 @@ jobs:
           df -h
           ulimit -a
 
-      - name: Create environment BASE ${{ matrix.python-version }}
+      - name: Create environment ${{ matrix.environ }} ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
