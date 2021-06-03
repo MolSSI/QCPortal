@@ -22,6 +22,7 @@ setup(
     long_description_content_type="text/markdown",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
+    python_requires=">=3.7",
     license='BSD-3-Clause',
     # Which Python importable modules should be included when your package is installed
     packages=find_packages(),
