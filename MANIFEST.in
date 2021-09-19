@@ -1,0 +1,12 @@
+recursive-include qcportal *.py
+recursive-include qcportal/data *.npy
+recursive-include qcportal/data *.psimol
+recursive-include qcportal/data *.json
+
+include setup.py
+include README.md
+include LICENSE
+include MANIFEST.in
+
+include versioneer.py
+include qcportal/_version.py
