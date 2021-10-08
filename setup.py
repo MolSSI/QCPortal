@@ -48,6 +48,16 @@ setup(
         'pytest-cov',
     ],
 
+    extras_require={
+        "docs": [
+            "sphinx",
+            "sphinx-automodapi",
+            "sphinx_rtd_theme",
+            "nbsphinx",
+            "ipython",
+        ],
+    },
+
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research',
