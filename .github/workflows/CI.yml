@@ -1,0 +1,59 @@
+name: CI workflow for GHA
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+        environ: [base]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+            # We need the full depth for versions to work
+            fetch-depth: 0
+      - name: Additional info about the build
+        run: |
+          uname -a
+          free -m
+          df -h
+          ulimit -a
+
+      - name: Create environment ${{ matrix.environ }} ${{ matrix.python-version }}
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          activate-environment: qcportal
+          environment-file: devtools/conda-envs/${{ matrix.environ }}.yaml
+          auto-activate-base: false
+
+      - name: Environment Information
+        shell: bash -l {0}
+        run: |
+          conda info
+          conda list
+
+      - name: Install QCPortal
+        shell: bash -l {0}
+        run: |
+          python setup.py develop --no-deps
+
+      - name: Test the package
+        shell: bash -l {0}
+        run: |
+          pytest -v --cov=qcportal --cov-report=xml qcportal/tests/
+
+      - name: Code coverage report
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: true
