@@ -24,7 +24,7 @@ class ReactionSpecification(BaseModel):
     class Config:
         extra = Extra.forbid
 
-    program: constr(to_lower=True) = "manybody"
+    program: constr(to_lower=True) = "reaction"
 
     singlepoint_specification: Optional[QCSpecification]
     optimization_specification: Optional[OptimizationSpecification]
@@ -82,7 +82,7 @@ class ReactionRecord(BaseRecord):
     raw_data: _DataModel
 
     def _fetch_components(self):
-        url_params = {"include": ["*", "singlepoint_record"]}
+        url_params = {"include": ["*", "singlepoint_record", "optimization_record"]}
 
         self.raw_data.components = self.client._auto_request(
             "get",
@@ -95,7 +95,7 @@ class ReactionRecord(BaseRecord):
         )
 
     @property
-    def specification(self) -> QCSpecification:
+    def specification(self) -> ReactionSpecification:
         return self.raw_data.specification
 
     @property
