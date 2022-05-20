@@ -69,6 +69,7 @@ class BaseDataset(BaseModel):
         default_tag: str
         default_priority: PriorityEnum
 
+        metadata: Optional[Dict[str, Any]] = None
         extra: Optional[Dict[str, Any]] = None
 
         ########################################
@@ -82,7 +83,7 @@ class BaseDataset(BaseModel):
         record_items: Optional[List[Any]]
 
         # Values computed outside QCA
-        contributed_values: Optional[List[ContributedValues]] = None
+        contributed_values: Optional[Dict[str, ContributedValues]] = None
 
     client: Any
     raw_data: _DataModel  # Meant to be overridden by derived classes
@@ -215,7 +216,7 @@ class BaseDataset(BaseModel):
             f"v1/datasets/{self.id}/contributed_values",
             None,
             None,
-            Optional[List[ContributedValues]],
+            Optional[Dict[str, ContributedValues]],
             None,
             None,
         )
@@ -231,6 +232,7 @@ class BaseDataset(BaseModel):
             provenance=self.raw_data.provenance,
             default_tag=self.raw_data.default_tag,
             default_priority=self.raw_data.default_priority,
+            metadata=self.metadata,
         )
 
         self.assert_online()
@@ -712,6 +714,10 @@ class BaseDataset(BaseModel):
         return self.raw_data.provenance
 
     @property
+    def metadata(self):
+        return self.raw_data.metadata
+
+    @property
     def default_tag(self) -> Optional[str]:
         return self.raw_data.default_tag
 
@@ -760,11 +766,24 @@ class BaseDataset(BaseModel):
         return self._iterate_records()
 
     @property
-    def contributed_values(self):
+    def contributed_values(self) -> Dict[str, ContributedValues]:
         if self.raw_data.contributed_values is None:
             self.fetch_contributed_values()
 
         return self.raw_data.contributed_values
+
+
+class DatasetAddBody(RestModelBase):
+    name: str
+    description: Optional[str] = None
+    tagline: Optional[str] = None
+    tags: Optional[Dict[str, Any]] = None
+    group: Optional[str] = None
+    provenance: Optional[Dict[str, Any]]
+    visibility: bool = True
+    default_tag: Optional[str] = None
+    default_priority: PriorityEnum = PriorityEnum.normal
+    metadata: Optional[Dict[str, Any]] = None
 
 
 class DatasetModifyMetadata(RestModelBase):
@@ -775,6 +794,7 @@ class DatasetModifyMetadata(RestModelBase):
     group: Optional[str]
     visibility: bool
     provenance: Optional[Dict[str, Any]]
+    metadata: Optional[Dict[str, Any]]
 
     default_tag: str
     default_priority: PriorityEnum
