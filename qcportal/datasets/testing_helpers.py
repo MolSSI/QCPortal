@@ -138,6 +138,7 @@ def run_dataset_model_add_get_spec(
     assert ds.specifications["spec_1"].description is None
 
     assert ds.specifications["spec_2"].name == "spec_2"
+
     assert ds.specifications["spec_2"].specification == test_specs[1]
     assert ds.specifications["spec_2"].description == "a description"
 
@@ -241,7 +242,7 @@ def run_dataset_model_remove_record(snowflake_client, ds, test_entries, test_spe
     assert rec_ids[none_idx] == to_delete_id
 
 
-def run_dataset_model_submit(ds, test_entries, test_spec):
+def run_dataset_model_submit(ds, test_entries, test_spec, record_compare):
 
     # test_entries[2] should have additional keywords
     assert test_entries[2].additional_keywords
@@ -254,34 +255,46 @@ def run_dataset_model_submit(ds, test_entries, test_spec):
     assert len(all_records) == 1
     rec = all_records[0][2]
     assert rec.status == RecordStatusEnum.waiting
-    assert rec.specification == test_spec
-    assert rec.molecule == test_entries[0].molecule
+
+    record_compare(rec, test_entries[0], test_spec)
 
     # Used default tag/priority
-    assert rec.task.tag == "default_tag"
-    assert rec.task.priority == PriorityEnum.low
+    if rec.is_service:
+        assert rec.service.tag == "default_tag"
+        assert rec.service.priority == PriorityEnum.low
+    else:
+        assert rec.task.tag == "default_tag"
+        assert rec.task.priority == PriorityEnum.low
 
     # Now additional keywords
     ds.add_entries(test_entries[2])
     ds.submit()
     rec = ds.get_record(test_entries[2].name, "spec_1")
-    assert rec.molecule == test_entries[2].molecule
 
-    expected_kw = test_spec.keywords.copy()
-    expected_kw.update(test_entries[2].additional_keywords)
-    assert rec.specification.keywords == expected_kw
+    expected_spec = test_spec.copy(deep=True)
+    expected_spec.keywords.update(test_entries[2].additional_keywords)
+    record_compare(rec, test_entries[2], expected_spec)
 
     # Additional submission stuff
     ds.add_entries(test_entries[1])
     ds.submit(tag="new_tag", priority=PriorityEnum.high)
     rec = ds.get_record(test_entries[1].name, "spec_1")
-    assert rec.task.tag == "new_tag"
-    assert rec.task.priority == PriorityEnum.high
+    if rec.is_service:
+        assert rec.service.tag == "new_tag"
+        assert rec.service.priority == PriorityEnum.high
+    else:
+        assert rec.task.tag == "new_tag"
+        assert rec.task.priority == PriorityEnum.high
 
     # But didn't change others
     rec = ds.get_record(test_entries[2].name, "spec_1")
-    assert rec.task.tag == "default_tag"
-    assert rec.task.priority == PriorityEnum.low
+
+    if rec.is_service:
+        assert rec.service.tag == "default_tag"
+        assert rec.service.priority == PriorityEnum.low
+    else:
+        assert rec.task.tag == "default_tag"
+        assert rec.task.priority == PriorityEnum.low
 
 
 def run_dataset_model_submit_missing(ds):
@@ -373,6 +386,12 @@ def run_dataset_model_modify_records(ds, test_entries, test_spec):
     )
     rec = ds.get_record(entry_name, spec_name)
     assert rec.status == RecordStatusEnum.waiting
-    assert rec.task.tag == "new_tag"
-    assert rec.task.priority == PriorityEnum.low
+
+    if rec.is_service:
+        assert rec.service.tag == "new_tag"
+        assert rec.service.priority == PriorityEnum.low
+    else:
+        assert rec.task.tag == "new_tag"
+        assert rec.task.priority == PriorityEnum.low
+
     assert rec.comments[0].comment == "a new comment"
