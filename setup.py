@@ -29,19 +29,18 @@ setup(
     include_package_data=True,
 
     install_requires=[
-        'msgpack',
         'numpy',
-        'pandas',
+        'msgpack',
         'requests',
         'pyyaml',
         'pydantic',
         'qcelemental',
+        'tabulate',
         'tqdm',
-    ],
+        'pandas',
 
-    tests_require=[
-        'pytest',
-        'pytest-cov',
+        # Only need for python 3.7, but no harm in always including it
+        "typing-extensions", 
     ],
 
     classifiers=[
