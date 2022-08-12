@@ -32,11 +32,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-cov",
-    "codecov",
-]
 lint = [
     "black"
 ]
@@ -59,9 +54,3 @@ default-tag = "0.0.99" # useful for CI/shallow clones
 
 [tool.black]
 line-length = 120
-
-[tool.pytest.ini_options]
-markers = ["slow"]
-
-[tool.coverage.run]
-omit = ["*/tests/*"]
